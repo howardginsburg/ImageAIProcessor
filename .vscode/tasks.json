@@ -6,22 +6,37 @@
       "label": "func: host start",
       "command": "host start",
       "problemMatcher": "$func-python-watch",
-      "isBackground": true,
-      "dependsOn": "pip install (functions)"
+      "isBackground": true
     },
     {
-      "label": "pip install (functions)",
-      "type": "shell",
-      "osx": {
-        "command": "${config:azureFunctions.pythonVenv}/bin/python -m pip install -r requirements.txt"
-      },
-      "windows": {
-        "command": "${config:azureFunctions.pythonVenv}\\Scripts\\python -m pip install -r requirements.txt"
-      },
-      "linux": {
-        "command": "${config:azureFunctions.pythonVenv}/bin/python -m pip install -r requirements.txt"
-      },
-      "problemMatcher": []
+      "type": "func",
+      "command": "extensions install",
+      "problemMatcher": [],
+      "label": "func: extensions install"
+    },
+    {
+      "type": "func",
+      "command": "extensions install",
+      "problemMatcher": [],
+      "label": "func: extensions install"
+    },
+    {
+      "type": "func",
+      "command": "extensions install",
+      "problemMatcher": [],
+      "label": "func: extensions install"
+    },
+    {
+      "type": "func",
+      "command": "extensions install",
+      "problemMatcher": [],
+      "label": "func: extensions install"
+    },
+    {
+      "type": "func",
+      "command": "extensions install",
+      "problemMatcher": [],
+      "label": "func: extensions install"
     }
   ]
 }

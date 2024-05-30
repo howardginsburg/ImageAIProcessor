@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "AZURE_AI_SERVICE_ENDPOINT": "<Your AI Service Endpoint>",
+    "AZURE_AI_SERVICE_KEY": "<Your Key Here>",
+    "STORAGE_ACCOUNT_CONNECTION":"<Your Storage Account Connection String>",
+    "ORIGINAL_IMAGE_CONTAINER": "<Your Storage container for Images>",
+    "CONVERTED_IMAGE_CONTAINER": "<Your Storage container for converted and rescaled Images>",
+    "TEST_IMAGE_URI_BAK": "https://static01.nyt.com/images/2015/10/23/fashion/23OTR-A/23OTR-A-superJumbo.jpg?quality=75&auto=webp",
+    "TEMP_IMAGE_PATH": "tmp"
+  }
+}

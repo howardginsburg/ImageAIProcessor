@@ -1,0 +1,24 @@
+//Paste this into swimlanes.io to generate the model.
+
+title: Facial Recognition Flow
+
+
+Orchestration Function -> Face API Orchestrator: Process File(url)
+
+Face API Orchestrator -> Face API: Detect Faces
+
+Face API Orchestrator -> Face API: Check For Celebrities
+
+
+Face API Orchestrator -> Face API: Detect Similar Faces
+
+Face API Orchestrator -> Face API: Create New Person(s)
+
+Face API Orchestrator -> Face API: Add Detected Face(s) to Person(s)
+
+Face API Orchestrator -> Face API: Check for bounding box overlap with celebrities
+
+Orchestration Function <-- Face API Orchestrator: List of People Details
+
+Orchestration Function -> Database Manager: Update Database
+
