@@ -1,11 +1,9 @@
 import azure.functions as func
-from azure.storage.blob import BlobClient, BlobServiceClient, generate_blob_sas, BlobSasPermissions
-import azure_face_recognition
+from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 import imagehelper
 from PIL import Image
 from io import BytesIO
 import json
-import datetime
 import logging
 import os
 
