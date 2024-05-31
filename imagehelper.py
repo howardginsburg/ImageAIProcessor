@@ -42,7 +42,7 @@ class ImageHelper:
 
     def _convert_type(self, image):
         """
-        Converts the mode of an image to 'I' (32-bit signed integer pixels) if it's not 'RGB'.
+        Converts the mode of an image to 'I' (32-bit signed integer pixels) if it has any of the I permutations.
         This is done to ensure that resizing and saving the image as a PNG will work correctly.
 
         Parameters:
@@ -56,7 +56,12 @@ class ImageHelper:
         mode = image.mode
 
         # If the image is not in 'RGB' mode, convert it to 'I' mode
-        if image.mode != 'RGB':
+        #if image.mode != 'RGB':
+        #    mode = 'I'
+        # 
+
+        #If image.mode begins with 'I;' then it is a 32-bit signed integer image
+        if image.mode.startswith('I;'):
             mode = 'I' 
 
         # Convert the image to the new mode
