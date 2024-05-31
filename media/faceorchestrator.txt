@@ -20,5 +20,4 @@ Face API Orchestrator -> Face API: Check for bounding box overlap with celebriti
 
 Orchestration Function <-- Face API Orchestrator: List of People Details
 
-Orchestration Function -> Database Manager: Update Database
 
