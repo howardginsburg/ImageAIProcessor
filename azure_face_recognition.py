@@ -274,7 +274,7 @@ class AzureFaceRecognition:
         image_url (str): The URL of the image to process.
 
         Returns:
-        str: A JSON string containing a list of persons detected in the image. Each person is represented as a dictionary with the following keys:
+        str: A list of persons detected in the image. Each person is represented as a dictionary with the following keys:
             - 'person_id': The ID of the person.
             - 'celebrity_name': The name of the celebrity if the person is identified as a celebrity, otherwise 'Unknown'.
             - 'bounding_box': The bounding box of the person's face in the image.
@@ -332,7 +332,8 @@ class AzureFaceRecognition:
                 'bounding_box': face['faceRectangle']
             })
 
-        return json.dumps(persons)
+        #return json.dumps(persons)
+        return persons
 
         
 

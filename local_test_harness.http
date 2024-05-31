@@ -1,0 +1,5 @@
+http://localhost:7071/api/faceorchestrator?filename=BB99_converted.png
+
+###
+
+http://localhost:7071/api/imagescaler?filename=BB99.tif
