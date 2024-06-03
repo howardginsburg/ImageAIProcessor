@@ -1,13 +1,11 @@
 import azure.functions as func
-from azure.storage.blob import BlobClient, BlobServiceClient, generate_blob_sas, BlobSasPermissions
-import azure_face_recognition
-import imagehelper
-from PIL import Image
-from io import BytesIO
+from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
+import facial_recognition
 import json
 import datetime
 import logging
 import os
+from util import generate_sas_url
 
 bp = func.Blueprint() 
 
@@ -31,24 +29,26 @@ def faceorchestrator(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse("You must pass in the filename parameter in the query string", status_code=400)
   
     # Create a BlobServiceClient object
-    blob_service_client = BlobServiceClient.from_connection_string(os.getenv('STORAGE_ACCOUNT_CONNECTION'))  
+    # blob_service_client = BlobServiceClient.from_connection_string(os.getenv('STORAGE_ACCOUNT_CONNECTION'))  
     
     
-    # Generate a SAS token for the blob
-    sas_token = generate_blob_sas(
-        blob_service_client.account_name,
-        os.getenv('CONVERTED_IMAGE_CONTAINER'),
-        filename,
-        account_key=blob_service_client.credential.account_key,
-        permission=BlobSasPermissions(read=True),
-        expiry=datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-    )
+    # # Generate a SAS token for the blob
+    # sas_token = generate_blob_sas(
+    #     blob_service_client.account_name,
+    #     os.getenv('CONVERTED_IMAGE_CONTAINER'),
+    #     filename,
+    #     account_key=blob_service_client.credential.account_key,
+    #     permission=BlobSasPermissions(read=True),
+    #     expiry=datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    # )
 
     # Construct the SAS URL for the blob
-    sas_url = f"https://{blob_service_client.account_name}.blob.core.windows.net/{os.getenv('CONVERTED_IMAGE_CONTAINER')}/{filename}?{sas_token}"  
+    #sas_url = f"https://{blob_service_client.account_name}.blob.core.windows.net/{os.getenv('CONVERTED_IMAGE_CONTAINER')}/{filename}?{sas_token}"  
+
+    sas_url = generate_sas_url(os.getenv('STORAGE_ACCOUNT_CONNECTION'), os.getenv('CONVERTED_IMAGE_CONTAINER'), filename)
 
     # Call the Face API function
-    result = azure_face_recognition.AzureFaceRecognition().process_image(sas_url)
+    result = facial_recognition.AzureFaceRecognition().process_image(sas_url)
 
     # Create a new dictionary to store the result
     result_dict = {}
@@ -60,6 +60,7 @@ def faceorchestrator(req: func.HttpRequest) -> func.HttpResponse:
 
     # Create a new BlobClient for the converted blob
     face_result_file = f"{os.path.splitext(filename)[0]}.json"
+    blob_service_client = BlobServiceClient.from_connection_string(os.getenv('STORAGE_ACCOUNT_CONNECTION'))  
     face_result_blob_client = blob_service_client.get_blob_client(os.getenv('FACE_RESULT_CONTAINER'), face_result_file)
 
     # Open the temp file in read mode

@@ -1,4 +1,5 @@
-import os, json
+import os, json, datetime
+from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 
 
 def load_environment_vars():
@@ -15,6 +16,26 @@ def load_environment_vars():
     for key, value in data['Values'].items():
         # Set each key-value pair as an environment variable
         os.environ[key] = value
+
+def generate_sas_url(storage_account_connection, container_name, filename):
+    # Create a BlobServiceClient object
+    blob_service_client = BlobServiceClient.from_connection_string(storage_account_connection)  
+    
+    
+    # Generate a SAS token for the blob
+    sas_token = generate_blob_sas(
+        blob_service_client.account_name,
+        container_name,
+        filename,
+        account_key=blob_service_client.credential.account_key,
+        permission=BlobSasPermissions(read=True),
+        expiry=datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    )
+
+    # Construct the SAS URL for the blob
+    sas_url = f"https://{blob_service_client.account_name}.blob.core.windows.net/{os.getenv('CONVERTED_IMAGE_CONTAINER')}/{filename}?{sas_token}"
+
+    return sas_url
 
 if __name__ == "__main__":
     load_environment_vars()

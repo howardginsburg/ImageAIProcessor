@@ -1,6 +1,6 @@
 import azure.functions as func
 from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
-import imagehelper
+import image_scaler
 from PIL import Image
 from io import BytesIO
 import json
@@ -39,7 +39,7 @@ def imagescaler(req: func.HttpRequest) -> func.HttpResponse:
 
     # Open the image and convert it to PNG
     image = Image.open(BytesIO(original_blob_data))
-    image = imagehelper.ImageHelper().resize(image=image)
+    image = image_scaler.ImageHelper().resize(image=image)
     
     # Create a new BlobClient for the converted blob
     converted_filename = f"{os.path.splitext(filename)[0]}_converted.png"
@@ -56,7 +56,7 @@ def imagescaler(req: func.HttpRequest) -> func.HttpResponse:
     result = json.dumps({"filename": converted_filename})
     
     # Log the result
-    logging.info(f"Face API result: {result}")
+    logging.info(f"Image scaler result: {result}")
 
     
 

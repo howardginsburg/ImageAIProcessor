@@ -30,3 +30,6 @@ An Http trigger with the name of a resized image file in the `resized` container
 
 ![Architecture](/media/faceorchestrator.png)
 
+### AI Narrative
+
+An Http trigger with the name of an image file in the `resized` container.  It will create a SAS token for the image, process it through an Azure OpenAI instance to generate a narrative for an image.
