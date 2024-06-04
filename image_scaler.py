@@ -4,6 +4,7 @@ import uuid
 from PIL import Image
 from io import BytesIO
 from util import load_environment_vars
+import tempfile
 
 from PIL import Image
 from io import BytesIO
@@ -123,7 +124,8 @@ class ImageHelper:
         # Generate a temporary file name
         temp_image_name = uuid.uuid4()
         # Get the path to the temporary file
-        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.getenv('TEMP_IMAGE_PATH'), f'{temp_image_name}.png')
+        #file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.getenv('TEMP_IMAGE_PATH'), f'{temp_image_name}.png')
+        file_path = os.path.join(tempfile.gettempdir(), f'{temp_image_name}.png')
 
         # Save the image to the temporary file
         image.save(file_path, format='PNG')
@@ -136,6 +138,8 @@ class ImageHelper:
 if __name__ == "__main__":
     # Load environment variables
     load_environment_vars()
+
+    #print(os.path.dirname(os.path.abspath(__file__)))
 
     # Get the URI of the image from the environment variables. This can be either a URL or a local file path.
     file_uri = os.getenv("TEST_IMAGE_URI")
