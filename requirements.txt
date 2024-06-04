@@ -8,3 +8,4 @@ requests
 grpcio
 pillow
 opentelemetry-api
+openai
