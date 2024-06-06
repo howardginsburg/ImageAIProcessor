@@ -37,6 +37,21 @@ def generate_sas_url(storage_account_connection, container_name, filename):
 
     return sas_url
 
+def get_functions_url(function_name, query_string):
+    functions_url = f"{os.getenv('BASE_URL')}/api/{function_name}"
+
+    # If the functions_url does not contain localhost, then it is running in Azure
+    if "localhost" not in functions_url:
+        functions_url = f"{functions_url}?code={os.getenv('FUNCTIONS_KEY')}"
+        if query_string:
+            functions_url = f"{functions_url}&{query_string}"
+    else:
+        if query_string:
+            functions_url = f"{functions_url}?{query_string}"
+    
+
+    return functions_url
+
 if __name__ == "__main__":
     load_environment_vars()
     # Iterate through all the keys in the environment variables and print the key and value

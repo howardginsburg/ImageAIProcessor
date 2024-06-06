@@ -124,7 +124,6 @@ class ImageHelper:
         # Generate a temporary file name
         temp_image_name = uuid.uuid4()
         # Get the path to the temporary file
-        #file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.getenv('TEMP_IMAGE_PATH'), f'{temp_image_name}.png')
         file_path = os.path.join(tempfile.gettempdir(), f'{temp_image_name}.png')
 
         # Save the image to the temporary file

@@ -4,6 +4,8 @@
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "python",
     "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "BASE_URL": "http://localhost:7071 for local.  Replace with Azure URL when deployed.",
+    "FUNCTIONS_KEY":"NOT NEEDED FOR LOCAL.  UPDATE WITH FUNCTIONS KEY WHEN DEPLOYED",
     "AZURE_AI_SERVICE_ENDPOINT": "<Your AI Service Endpoint>",
     "AZURE_AI_SERVICE_KEY": "<Your Key Here>",
     "STORAGE_ACCOUNT_CONNECTION":"<Your Storage Account Connection String>",
@@ -12,7 +14,6 @@
     "FACE_RESULT_CONTAINER": "<Your Storage container for the output of the face detection function>",
     "AZURE_OPEN_AI_ENDPOINT": "https://<Your Resource>.openai.azure.com/openai/deployments/<Your GPT 4 Turbo Deployment>/chat/completions?api-version=2024-05-01-preview",
     "AZURE_OPEN_AI_KEY": "<Your Open AI Key>",
-    "TEMP_IMAGE_PATH": "tmp",
     "TEST_IMAGE_URI": "https://static01.nyt.com/images/2015/10/23/fashion/23OTR-A/23OTR-A-superJumbo.jpg?quality=75&auto=webp"
     
   }

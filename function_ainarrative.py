@@ -19,22 +19,6 @@ def ImageNarrativeGenerator(req: func.HttpRequest) -> func.HttpResponse:
         filename = req.params.get('filename')
         if not filename:
             return func.HttpResponse("You must pass in the filename parameter in the query string", status_code=400)
-  
-        # Create a BlobServiceClient object
-        # blob_service_client = BlobServiceClient.from_connection_string(os.getenv('STORAGE_ACCOUNT_CONNECTION'))  
-        
-        # # Generate a SAS token for the blob
-        # sas_token = generate_blob_sas(
-        #     blob_service_client.account_name,
-        #     os.getenv('CONVERTED_IMAGE_CONTAINER'),
-        #     filename,
-        #     account_key=blob_service_client.credential.account_key,
-        #     permission=BlobSasPermissions(read=True),
-        #     expiry=datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-        # )
-
-        # # Construct the SAS URL for the blob
-        # sas_url = f"https://{blob_service_client.account_name}.blob.core.windows.net/{os.getenv('CONVERTED_IMAGE_CONTAINER')}/{filename}?{sas_token}"
 
         sas_url = generate_sas_url(os.getenv('STORAGE_ACCOUNT_CONNECTION'), os.getenv('CONVERTED_IMAGE_CONTAINER'), filename)
 
