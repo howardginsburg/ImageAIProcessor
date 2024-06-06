@@ -33,7 +33,7 @@ def generate_sas_url(storage_account_connection, container_name, filename):
     )
 
     # Construct the SAS URL for the blob
-    sas_url = f"https://{blob_service_client.account_name}.blob.core.windows.net/{os.getenv('CONVERTED_IMAGE_CONTAINER')}/{filename}?{sas_token}"
+    sas_url = f"https://{blob_service_client.account_name}.blob.core.windows.net/{container_name}/{filename}?{sas_token}"
 
     return sas_url
 
