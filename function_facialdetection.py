@@ -26,7 +26,7 @@ def facialdetection(req: func.HttpRequest) -> func.HttpResponse:
     if not filename:
         return func.HttpResponse("You must pass in the filename parameter in the query string", status_code=400)
 
-    sas_url = generate_sas_url(os.getenv('STORAGE_ACCOUNT_CONNECTION'), os.getenv('CONVERTED_IMAGE_CONTAINER'), filename)
+    sas_url = generate_sas_url(os.getenv('STORAGE_ACCOUNT_CONNECTION'), os.getenv('RESIZED_IMAGE_CONTAINER'), filename)
 
     # Call the Face API function
     result = facial_recognition.AzureFaceRecognition().process_image(sas_url)

@@ -10,8 +10,8 @@
     "AZURE_AI_SERVICE_KEY": "<Your Key Here>",
     "STORAGE_ACCOUNT_CONNECTION":"<Your Storage Account Connection String>",
     "ORIGINAL_IMAGE_CONTAINER": "<Your Storage container for Images>",
-    "CONVERTED_IMAGE_CONTAINER": "<Your Storage container for converted and rescaled Images>",
-    "FACE_RESULT_CONTAINER": "<Your Storage container for the output of the face detection function>",
+    "RESIZED_IMAGE_CONTAINER": "<Your Storage container for resized and rescaled Images>",
+    "ORCHESTRATOR_RESULT_CONTAINER": "<Your Storage container for the output of the face detection function>",
     "AZURE_OPEN_AI_ENDPOINT": "https://<Your Resource>.openai.azure.com/openai/deployments/<Your GPT 4 Turbo Deployment>/chat/completions?api-version=2024-05-01-preview",
     "AZURE_OPEN_AI_KEY": "<Your Open AI Key>",
     "TEST_IMAGE_URI": "https://static01.nyt.com/images/2015/10/23/fashion/23OTR-A/23OTR-A-superJumbo.jpg?quality=75&auto=webp"

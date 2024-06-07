@@ -20,7 +20,7 @@ This Azure Functions project is a pipeline for reading images from a blob storag
     - `AZURE_AI_SERVICE_KEY` is the key for the Azure AI Service.
     - `AZURE_STORAGE_CONNECTION` is the connection string for the Azure Storage Account.
     - `ORIGINAL_IMAGE_CONTAINER` is the name of the container where the original images are stored. For example: `images`
-    - `CONVERTED_IMAGE_CONTAINER` is the name of the container where the resized images are stored. For example: `resized`
+    - `RESIZED_IMAGE_CONTAINER` is the name of the container where the resized images are stored. For example: `resized`
     - `ORCHESTRATOR_RESULT_CONTAINER` is the name of the container where the face results are stored. For example: `results`
     - `AZURE_OPEN_AI_ENDPOINT` is the endpoint for the Azure OpenAI Service.  For example: `https://<your openai name>.openai.azure.com/openai/deployments/<your gpt4 turbo deployment>/chat/completions?api-version=2024-05-01-preview`
     - `AZURE_OPEN_AI_KEY` is the key for the Azure OpenAI Service.

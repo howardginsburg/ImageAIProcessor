@@ -41,19 +41,19 @@ def imagescaler(req: func.HttpRequest) -> func.HttpResponse:
     image = Image.open(BytesIO(original_blob_data))
     image = image_scaler.ImageHelper().resize(image=image)
     
-    # Create a new BlobClient for the converted blob
-    converted_filename = f"{os.path.splitext(filename)[0]}_converted.png"
-    converted_blob_client = blob_service_client.get_blob_client(os.getenv('CONVERTED_IMAGE_CONTAINER'), converted_filename)
+    # Create a new BlobClient for the resized blob
+    resized_filename = f"{os.path.splitext(filename)[0]}.png"
+    resized_blob_client = blob_service_client.get_blob_client(os.getenv('RESIZED_IMAGE_CONTAINER'), resized_filename)
 
     # Open the temp file in read mode
     with open(image.filename, "rb") as data:
         # Upload the contents of the file to the blob
-        converted_blob_client.upload_blob(data, overwrite=True)
+        resized_blob_client.upload_blob(data, overwrite=True)
     
     # Remove the local temp file
     os.remove(image.filename)
 
-    result = json.dumps({"filename": converted_filename})
+    result = json.dumps({"filename": resized_filename})
     
     # Log the result
     logging.info(f"Image scaler result: {result}")
