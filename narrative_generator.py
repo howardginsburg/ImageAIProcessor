@@ -1,27 +1,9 @@
-import logging
-import azure.functions as func
-import os
-import requests
-from util import generate_sas_url
-#from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
-#import datetime
+import os, requests, logging
 
-bp = func.Blueprint() 
+class NarrativeGenerator:
 
-
-@bp.route(route="imagenarrativegenerator")
-
-def ImageNarrativeGenerator(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('AI Narrative function triggered.')
-
-    try:
-        # Get the filename from the request parameters
-        filename = req.params.get('filename')
-        if not filename:
-            return func.HttpResponse("You must pass in the filename parameter in the query string", status_code=400)
-
-        sas_url = generate_sas_url(os.getenv('STORAGE_ACCOUNT_CONNECTION'), os.getenv('RESIZED_IMAGE_CONTAINER'), filename)
-
+    def generate_narrative(self, image_url):
+        logging.info(f"Generating narrative for image: {image_url}")
         # Azure OpenAI GPT model details
         api_key = os.getenv("AZURE_OPEN_AI_KEY")
         gpt4_endpoint = os.getenv("AZURE_OPEN_AI_ENDPOINT")
@@ -54,7 +36,7 @@ def ImageNarrativeGenerator(req: func.HttpRequest) -> func.HttpResponse:
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"{sas_url}"
+                                "url": f"{image_url}"
                             }
                         }
                     ]
@@ -71,8 +53,8 @@ def ImageNarrativeGenerator(req: func.HttpRequest) -> func.HttpResponse:
         
         # Extract the narrative from the response
         narrative = response.json()['choices'][0]['message']['content']
-        return func.HttpResponse(narrative, status_code=200)
 
-    except Exception as e:
-        logging.error(f"Exception occurred: {e}")
-        return func.HttpResponse(f"Error: {str(e)}", status_code=500)
+        logging.info(f"Narrative generated: {narrative}")
+
+        return narrative
+        

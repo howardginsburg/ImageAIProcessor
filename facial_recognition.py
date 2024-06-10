@@ -1,5 +1,5 @@
-import requests, json, os, json, time
-from util import load_environment_vars
+import requests, json, os, json, logging
+
 
 class AzureFaceRecognition:
 
@@ -280,12 +280,13 @@ class AzureFaceRecognition:
             - 'bounding_box': The bounding box of the person's face in the image.
 
         """
+        logging.info(f"Processing image: {image_url}")
         # Detect the faces in the image.
-        print("Detecting faces...")
+        logging.debug("Detecting faces...")
         detected_faces_result = self._detect_faces(image_url)
 
         # Get any celebrities in the image.
-        print("Detecting celebrities...")
+        logging.debug("Detecting celebrities...")
         celebrity_result = self._detect_celebrity(image_url)
 
         persons = []
@@ -293,9 +294,9 @@ class AzureFaceRecognition:
         # For each face detected, search for similar faces in the persons.
         for face in detected_faces_result:
             face_id = face['faceId']
-            print(f"Processing face: {face_id}")
+            logging.debug(f"Processing face: {face_id}")
 
-            print("Searching for similar faces...")
+            logging.debug("Searching for similar faces...")
             similar_faces_result = self._search_for_similar_faces(face_id)
 
             # Initialize the person name as None
@@ -305,22 +306,22 @@ class AzureFaceRecognition:
             if len(similar_faces_result[0]['candidates']) == 0:
                 # create a new person
                 person_id = self._create_person(celebrity_name)
-                print(f"No similar face found.  Created new person.  Person ID: {person_id}")
+                logging.debug(f"No similar face found.  Created new person.  Person ID: {person_id}")
             else:
                 person_id = similar_faces_result[0]['candidates'][0]['personId']
-                print(f"Similar face found.  Person ID: {person_id}")
+                logging.debug(f"Similar face found.  Person ID: {person_id}")
             
             # Add the face to the person
-            print(f"Adding face {face_id} to person {person_id}.")
+            logging.debug(f"Adding face {face_id} to person {person_id}.")
             self._add_face_to_person(person_id, image_url, face['faceRectangle'])
 
             # Loop through the celebrities to see if we got any matches.
             for celebrity in celebrity_result:
-                print(f"Checking for celebrity match against {celebrity['name']}")
+                logging.debug(f"Checking for celebrity match against {celebrity['name']}")
                 # Since we got the faces and celebrities from two different api calls, the bounding boxes may be different.
                 # We need to check if the bounding boxes overlap to determine if the face is a celebrity.
                 if self._check_boundingbox_overlap(celebrity['faceRectangle'], face['faceRectangle']):
-                    print(f"Face {face_id} is a {celebrity['name']}.  Assigning celebrity to person {person_id}.")
+                    logging.debug(f"Face {face_id} is a {celebrity['name']}.  Assigning celebrity to person {person_id}.")
                     celebrity_name = celebrity['name']
                     self._update_person(person_id, celebrity_name)
                     break
@@ -332,33 +333,5 @@ class AzureFaceRecognition:
                 'bounding_box': face['faceRectangle']
             })
 
-        #return json.dumps(persons)
+        logging.info(f"Persons detected: {persons}")
         return persons
-
-        
-
-if __name__ == "__main__":
-    # Start the timer
-    start_time = time.time()
-
-    # Load environment variables from local.settings.json
-    load_environment_vars()
-
-    # Get the URL of the image to process from the environment variables
-    image_url = os.getenv("TEST_IMAGE_URI")
-
-    # Print the image URL
-    print(image_url)
-
-    # Create an AzureFaceRecognition object
-    face = AzureFaceRecognition()
-
-    # Process the image and get the result
-    result = face.process_image(image_url)
-
-    # Stop the timer and calculate the execution time
-    end_time = time.time()
-    print(f"Execution time: {end_time - start_time} seconds")
-
-    # Output the person data as JSON
-    print(result)

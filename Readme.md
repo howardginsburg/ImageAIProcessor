@@ -14,8 +14,6 @@ This Azure Functions project is a pipeline for reading images from a blob storag
 
 1. This repo is setup using devcontainers.  You must have docker installed or run it as a Codespace in Github. If you plan to run it locally, after the project opens, make sure to select 'Yes' when prompted to reopen in container.  This will ensure the correct environment is setup for the project, including the Azure Functions runtime environment.
 1. Copy the `local.settings.json.example` file to `local.settings.json` make updates.
-    - `BASE_URL` is the base url for the Azure Functions runtime.  For example: `http://localhost:7071` or `https://<appname>.azurewebsites.net`
-    - `FUNCTIONS_KEY` is the key for the Azure Functions runtime.  This is used when calling the orchestrator function to call the other functions.  This is not needed when running locally.
     - `AZURE_AI_SERVICE_ENDPOINT` is the endpoint for the Azure AI Service.  For example: `https://<appname>.cognitiveservices.azure.com/`
     - `AZURE_AI_SERVICE_KEY` is the key for the Azure AI Service.
     - `AZURE_STORAGE_CONNECTION` is the connection string for the Azure Storage Account.
@@ -28,25 +26,21 @@ This Azure Functions project is a pipeline for reading images from a blob storag
 
 ## Architecture Overview
 
-This project contains several functions that can be orchestrated together.  ImageScaler to resize images to 6MB or less as required for facial recognition and then FaceOrchestrator to process the images through the Azure Face API.
+This project contains a single Azure Function endpoint that orchestrates several capabilities.
 
-### Orchestrator
-
-An http trigger function that accepts an image file in the `images` container.  It will then orchestrate the calling of the ImageScaler, FaceOrchestrator, and AI Narrative functions.  It will then upload the results as a json file `results` container with the face rectangles and celebrity names.
+![Architecture](/media/imageprocessingflow.png)
 
 ### ImageScaler
 
-An http trigger with the name of an image file in the `images` container.  It will download the image, resize it, and upload it to the `resized` container.
+Takes the name of an image file in the `images` container, resizes it, and uploads it to the `resized` container.
 
-### FaceOrchestrator
+### FaceRecognizer
 
-An Http trigger with the name of a resized image file in the `resized` container.  It will create a SAS token for the image, process it through the Azure Face API to determine unique faces, and attempt to identify 'celebrity' faces.
+Uses a blob SAS key for an image in the `resized` container and processes it through the Azure Face API to determine unique faces, and attempt to identify 'celebrity' faces.
 
-![Architecture](/media/faceorchestrator.png)
+### NarrativeGenerator
 
-### AI Narrative
-
-An Http trigger with the name of an image file in the `resized` container.  It will create a SAS token for the image, process it through an Azure OpenAI instance to generate a narrative for an image.
+Uses a blob SAS key for an image in the `resized` container and processes it through an Azure OpenAI instance to generate a narrative for an image.
 
 ## Deployment
 

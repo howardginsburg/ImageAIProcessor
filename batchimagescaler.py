@@ -1,13 +1,28 @@
 
 
 from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
-import os
-import util
+import os, requests, json
 import requests
 
-util.load_environment_vars()
+def load_environment_vars():
+    """
+    This function is designed to load environment variables from a local.settings.json file.  It's meant to be used when running one of the python files locally
+    rather than within the function app.  This is because the function app will automatically load environment variables from the local.settings.json file.
+    """
+    # Open the local.settings.json file
+    with open('local.settings.json') as f:
+        # Load the JSON data from the file
+        data = json.load(f)
 
-endpoint = "http://localhost:7071/api/imagescaler"
+    # Iterate over the key-value pairs in the 'Values' dictionary
+    for key, value in data['Values'].items():
+        # Set each key-value pair as an environment variable
+        os.environ[key] = value
+
+
+load_environment_vars()
+
+endpoint = "http://localhost:7071/api/orchestrator"
 
 # Create a BlobServiceClient object
 blob_service_client = BlobServiceClient.from_connection_string(os.getenv('STORAGE_ACCOUNT_CONNECTION'))
@@ -31,6 +46,9 @@ for blob in blobs:
         print(f"Error: {response.status_code}")
 
     i += 1
+
+    if i > 5:
+        break
 
 
 
