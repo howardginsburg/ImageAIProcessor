@@ -1,4 +1,5 @@
 import os, json, datetime
+from urllib.parse import urlencode
 from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 
 
@@ -40,15 +41,16 @@ def generate_sas_url(storage_account_connection, container_name, filename):
 def get_functions_url(function_name, query_string):
     functions_url = f"{os.getenv('BASE_URL')}/api/{function_name}"
 
-    # If the functions_url does not contain localhost, then it is running in Azure
-    if "localhost" not in functions_url:
-        functions_url = f"{functions_url}?code={os.getenv('FUNCTIONS_KEY')}"
-        if query_string:
-            functions_url = f"{functions_url}&{query_string}"
-    else:
-        if query_string:
-            functions_url = f"{functions_url}?{query_string}"
-    
+    query_params = {}
+    if query_string:
+        query_params = dict(param.split('=') for param in query_string.split('&'))
+
+    # If there is a FUNCTIONS_KEY in the environment variables, add it to the query parameters
+    if os.getenv('FUNCTIONS_KEY'):
+        query_params['code'] = os.getenv('FUNCTIONS_KEY')
+
+    encoded_query_string = urlencode(query_params)
+    functions_url = f"{functions_url}?{encoded_query_string}"
 
     return functions_url
 

@@ -42,10 +42,4 @@ def facialdetection(req: func.HttpRequest) -> func.HttpResponse:
     # Log the result
     logging.info(f"Face API result: {result_json}")
 
-    # Return the result as a JSON string in the body of the HTTP response
-    return func.HttpResponse(body=result_json,
-            status_code=200,
-            headers={
-                'Content-Type': 'application/json'
-            }
-    )
+    return func.HttpResponse(result_json, mimetype="application/json", status_code=200)

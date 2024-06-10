@@ -53,17 +53,14 @@ def imagescaler(req: func.HttpRequest) -> func.HttpResponse:
     # Remove the local temp file
     os.remove(image.filename)
 
-    result = json.dumps({"filename": resized_filename})
+    result_dict = {}
+    result_dict["filename"] = resized_filename
+
+    result_json = json.dumps(result_dict)
     
     # Log the result
-    logging.info(f"Image scaler result: {result}")
+    logging.info(f"Image scaler result: {result_json}")
 
-    
 
     # Return the result as a JSON string in the body of the HTTP response
-    return func.HttpResponse(body=result,
-            status_code=200,
-            headers={
-                'Content-Type': 'application/json'
-            }
-    )
+    return func.HttpResponse(result_json, mimetype="application/json", status_code=200)
