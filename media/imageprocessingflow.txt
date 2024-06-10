@@ -11,22 +11,24 @@ Orchestration Function -> Orchestration Function: Generate Image URL and SAS Tok
 
 Orchestration Function -> Facial Detection: Process Image(url)
 
-Facial Detection -> Facial Detection: Detect Faces
+Facial Detection -> Azure Face API: Detect Faces
 
-Facial Detection -> Facial Detection: Check For Celebrities
+Facial Detection -> Azure Face API: Check For Celebrities
 
 
-Facial Detection -> Facial Detection: Detect Similar Faces
+Facial Detection -> Azure Face API: Detect Similar Faces
 
-Facial Detection -> Facial Detection: Create New Person(s)
+Facial Detection -> Azure Face API: Create New Person(s)
 
-Facial Detection -> Facial Detection: Add Detected Face(s) to Person(s)
+Facial Detection -> Azure Face API: Add Detected Face(s) to Person(s)
 
 Facial Detection -> Facial Detection: Check for bounding box overlap with celebrities
 
 Orchestration Function <-- Facial Detection: List of People Details
 
 Orchestration Function -> Narrative Generator: Process Image(url)
+
+Narrative Generator -> Azure Open AI: Generate Narrative
 
 Orchestration Function <-- Narrative Generator: Narrative
 
