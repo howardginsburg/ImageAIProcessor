@@ -5,6 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 import image_scaler
 import facial_recognition
 import narrative_generator
+import logging
+
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
@@ -20,13 +22,15 @@ def orchestrator(req: func.HttpRequest) -> func.HttpResponse:
     
     logging.info(f"Orchestrating functions for file: {filename}")
 
+    start_time = datetime.datetime.now()
+
     result_dict = {}
     result_dict["filename"] = filename
 
     blob_service_client = BlobServiceClient.from_connection_string(os.getenv('STORAGE_ACCOUNT_CONNECTION')) 
 
     logging.info(f"Calling ImageScaler function for file: {filename}")
-    resized_filename = image_scaler.ImageHelper().resize(filename)
+    resized_filename = resize_image(filename)
     result_dict["resizedfilename"] = resized_filename
 
     # Generate a SAS token for the blob
@@ -70,18 +74,32 @@ def orchestrator(req: func.HttpRequest) -> func.HttpResponse:
     # Log the result
     logging.info(f"Orchestration API result: {result_json}")
 
+    end_time = datetime.datetime.now()
+
+    logging.info(f"Orchestration completed in {(end_time - start_time).total_seconds()} seconds")
+
     return func.HttpResponse(result_json, mimetype="application/json", status_code=200)
 
 def resize_image(filename):
+    start_time = datetime.datetime.now()
     resized_filename = image_scaler.ImageHelper().resize(filename)
+    end_time = datetime.datetime.now()
+
+    logging.info(f"Image resizing completed in {(end_time - start_time).total_seconds()} seconds")
     return resized_filename
 
 def call_face_orchestrator(sas_url):
+    start_time = datetime.datetime.now()
     face_result = facial_recognition.AzureFaceRecognition().process_image(sas_url)
+    end_time = datetime.datetime.now()
+    logging.info(f"Face recognition completed in {(end_time - start_time).total_seconds()} seconds")
     return face_result
 
 def call_ai_narrative(sas_url):
+    start_time = datetime.datetime.now()
     narrative = narrative_generator.NarrativeGenerator().generate_narrative(sas_url)
+    end_time = datetime.datetime.now()
+    logging.info(f"AI narrative generation completed in {(end_time - start_time).total_seconds()} seconds")
     return narrative
 
     

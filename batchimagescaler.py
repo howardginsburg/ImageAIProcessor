@@ -3,6 +3,7 @@
 from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 import os, requests, json
 import requests
+from datetime import datetime
 
 def load_environment_vars():
     """
@@ -35,6 +36,8 @@ total_blobs = len(blobs)
 # Print the total amount of blobs
 print(f"Total blobs in container: {total_blobs}")
 
+start_time = datetime.now()
+
 i = 1
 for blob in blobs:
     filename = blob.name
@@ -47,9 +50,13 @@ for blob in blobs:
 
     i += 1
 
-    if i > 5:
-        break
+    #if i > 5:
+    #    break
 
+end_time = datetime.now()
+
+# Print total time in seconds
+print(f"Total time: {(end_time - start_time).total_seconds()} seconds")
 
 
 

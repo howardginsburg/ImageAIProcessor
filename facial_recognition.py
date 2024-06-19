@@ -43,46 +43,38 @@ class AzureFaceRecognition:
         # Return the JSON response
         return response.json()
 
-    def _search_for_similar_faces(self, face_id):
-        """
-        This function searches for faces similar to a given face using Azure's Face API.
-
-        Parameters:
-        face_id (str): The ID of the face to find similar faces for.
-
-        Returns:
-        dict: The JSON response from the API. This includes information about the similar faces found.
-
-        """
-
+    def _search_for_similar_faces(self, face_ids):
         # Define the endpoint
-        # The endpoint URL is constructed using the base URL stored in the AZURE_AI_SERVICE_ENDPOINT environment variable,
-        # along with the specific path for the face identification API.
         face_endpoint = f"{os.getenv('AZURE_AI_SERVICE_ENDPOINT')}/face/{AzureFaceRecognition.API_VERSION}/identify"
 
         # Define the headers
-        # The headers for the API request are defined here. The Content-Type is set to 'application/json',
-        # and the subscription key for the Azure AI service is retrieved from the AZURE_AI_SERVICE_KEY environment variable.
         headers = {
             'Content-Type': 'application/json',
             'Ocp-Apim-Subscription-Key': os.getenv("AZURE_AI_SERVICE_KEY"),
         }
 
-        # Define the body
-        # The body the API request is defined here. It is a JSON object that contains the ID of the face to find similar faces for,
-        # and a wildcard character (*) to search among all persons.
-        body = json.dumps({
-            'faceIds': [face_id],
-            'personIds': ["*"]
-        })
+        # Initialize an empty list to store all responses
+        all_responses = []
 
-        # Make the POST request
-        # The API request is made here. The response from the API is a JSON object that contains information about the similar faces found.
-        response = requests.post(face_endpoint, headers=headers, data=body)
+        # Split face_ids into chunks of 10
+        for i in range(0, len(face_ids), 10):
+            chunk_face_ids = face_ids[i:i+10]
 
-        # Return the JSON response
-        return response.json()
+            # Define the body
+            body = json.dumps({
+                'faceIds': chunk_face_ids,
+                'personIds': ["*"]
+            })
 
+            # Make the POST request
+            response = requests.post(face_endpoint, headers=headers, data=body)
+
+            # Append the response to all_responses
+            all_responses.extend(response.json())
+
+        # Return all responses
+        return all_responses
+    
     def _create_person(self, name):
         """
         This function creates a new person in Azure's Face API.
@@ -267,60 +259,59 @@ class AzureFaceRecognition:
             return True  # Overlap exists
         
     def process_image(self, image_url):
-        """
-        Processes an image to detect faces and identify any celebrities present.
-
-        Parameters:
-        image_url (str): The URL of the image to process.
-
-        Returns:
-        str: A list of persons detected in the image. Each person is represented as a dictionary with the following keys:
-            - 'person_id': The ID of the person.
-            - 'celebrity_name': The name of the celebrity if the person is identified as a celebrity, otherwise 'Unknown'.
-            - 'bounding_box': The bounding box of the person's face in the image.
-
-        """
         logging.info(f"Processing image: {image_url}")
+
         # Detect the faces in the image.
         logging.debug("Detecting faces...")
         detected_faces_result = self._detect_faces(image_url)
+
+        # Create a dictionary where the key is the faceId and the value is the face data.  We need
+        # to be able to lookup bounding box information.
+        faces_dict = {face['faceId']: face for face in detected_faces_result}
+
 
         # Get any celebrities in the image.
         logging.debug("Detecting celebrities...")
         celebrity_result = self._detect_celebrity(image_url)
 
+        # Extract all face IDs
+        face_ids = [face['faceId'] for face in detected_faces_result]
+
+        # Search for similar faces
+        logging.debug("Searching for similar faces...")
+        similar_faces_results = self._search_for_similar_faces(face_ids)
+
         persons = []
 
-        # For each face detected, search for similar faces in the persons.
-        for face in detected_faces_result:
-            face_id = face['faceId']
+        # For each similar face result, process it
+        for similar_faces_result in similar_faces_results:
+            face_id = similar_faces_result['faceId']
             logging.debug(f"Processing face: {face_id}")
-
-            logging.debug("Searching for similar faces...")
-            similar_faces_result = self._search_for_similar_faces(face_id)
 
             # Initialize the person name as None
             celebrity_name = "Unknown"
 
             # Get the person id of the most similar face or create a new person if no similar face is found.
-            if len(similar_faces_result[0]['candidates']) == 0:
+            if len(similar_faces_result['candidates']) == 0:
                 # create a new person
                 person_id = self._create_person(celebrity_name)
                 logging.debug(f"No similar face found.  Created new person.  Person ID: {person_id}")
             else:
-                person_id = similar_faces_result[0]['candidates'][0]['personId']
+                person_id = similar_faces_result['candidates'][0]['personId']
                 logging.debug(f"Similar face found.  Person ID: {person_id}")
-            
+
+            # Get the faceRectangle of the face
+            face_rectangle = faces_dict[face_id]['faceRectangle']
+
             # Add the face to the person
             logging.debug(f"Adding face {face_id} to person {person_id}.")
-            self._add_face_to_person(person_id, image_url, face['faceRectangle'])
+            self._add_face_to_person(person_id, image_url, face_rectangle)
 
             # Loop through the celebrities to see if we got any matches.
             for celebrity in celebrity_result:
                 logging.debug(f"Checking for celebrity match against {celebrity['name']}")
-                # Since we got the faces and celebrities from two different api calls, the bounding boxes may be different.
                 # We need to check if the bounding boxes overlap to determine if the face is a celebrity.
-                if self._check_boundingbox_overlap(celebrity['faceRectangle'], face['faceRectangle']):
+                if self._check_boundingbox_overlap(celebrity['faceRectangle'], face_rectangle):
                     logging.debug(f"Face {face_id} is a {celebrity['name']}.  Assigning celebrity to person {person_id}.")
                     celebrity_name = celebrity['name']
                     self._update_person(person_id, celebrity_name)
@@ -330,7 +321,7 @@ class AzureFaceRecognition:
             persons.append({
                 'person_id': person_id,
                 'celebrity_name': celebrity_name,
-                'bounding_box': face['faceRectangle']
+                'bounding_box': face_rectangle
             })
 
         logging.info(f"Persons detected: {persons}")
