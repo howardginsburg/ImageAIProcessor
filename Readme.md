@@ -8,6 +8,8 @@ This Azure Functions project is a pipeline for reading images from a blob storag
     - You must create three containers in the storage account: ex: `images`, `resized`, and `results`.
 1. Azure AI Services Account (Face API)
     - You must submit a [request](https://learn.microsoft.com/azure/ai-services/computer-vision/overview-identity) to enable usage of the full Face API including face similarity and celebrity recognition.
+1. Azure Open AI
+    - You must have an Azure OpenAI account and a GPT-4 Turbo or GPT4o deployment.
 
 
 ## Getting Started
@@ -19,8 +21,9 @@ This Azure Functions project is a pipeline for reading images from a blob storag
     - `AZURE_STORAGE_CONNECTION` is the connection string for the Azure Storage Account.
     - `ORIGINAL_IMAGE_CONTAINER` is the name of the container where the original images are stored. For example: `images`
     - `RESIZED_IMAGE_CONTAINER` is the name of the container where the resized images are stored. For example: `resized`
-    - `ORCHESTRATOR_RESULT_CONTAINER` is the name of the container where the face results are stored. For example: `results`
-    - `AZURE_OPEN_AI_ENDPOINT` is the endpoint for the Azure OpenAI Service.  For example: `https://<your openai name>.openai.azure.com/openai/deployments/<your gpt4 turbo deployment>/chat/completions?api-version=2024-05-01-preview`
+    - `ORCHESTRATOR_RESULT_CONTAINER` is optional.  The name of the container where the face results are stored. For example: `results`  If not set, then the json output of the function will not be stored.
+    - `ORCHESTRATOR_RESULT_CONNECTION` is optional.  If you want to store the results in a separate storage account, then set this value to the connection string of the storage account.  If `ORCHESTRATOR_RESULT_CONTAINER` is set and this value is not, then the `AZURE_STORAGE_CONNECTION` will be used.
+    - `AZURE_OPEN_AI_ENDPOINT` is the endpoint for the Azure OpenAI Service.  For example: `https://<your openai name>.openai.azure.com/openai/deployments/<your gpt4 turbo/4o deployment>/chat/completions?api-version=2024-05-01-preview`
     - `AZURE_OPEN_AI_KEY` is the key for the Azure OpenAI Service.
 1. You can run the project locally by clicking the debug button in VSCode and selecting 'Attach to Python Functions'.
 
