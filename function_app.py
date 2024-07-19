@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import image_scaler
 import facial_recognition
 import narrative_generator
+import category_generator
 import logging
 
 
@@ -55,15 +56,19 @@ def orchestrator(req: func.HttpRequest) -> func.HttpResponse:
     with ThreadPoolExecutor(max_workers=2) as executor:
         face_orchestrator_future = executor.submit(call_face_orchestrator, sas_url)
         ai_narrative_future = executor.submit(call_ai_narrative, sas_url)
+        categories_future = executor.submit(call_categories, sas_url)
 
         face_api_result = face_orchestrator_future.result()
         ai_narrative_result = ai_narrative_future.result()
+        categories_result = categories_future.result()
 
     # Add results to the result dictionary
     result_dict["facedetails"] = face_api_result["face_result"]
     result_dict["metrics"]["facial_recognition"] = face_api_result["total_time"]
     result_dict["ainarrative"] = ai_narrative_result["narrative"]
     result_dict["metrics"]["ai_narrative"] = ai_narrative_result["total_time"]
+    result_dict["categories"] = categories_result["categories_result"]
+    result_dict["metrics"]["ai_categories"] = categories_result["total_time"]
 
     end_time = datetime.datetime.now()
 
@@ -133,6 +138,20 @@ def call_ai_narrative(sas_url):
 
     result = {
         'narrative': narrative,
+        'total_time': total_time
+    }
+    return result
+
+def call_categories(sas_url):
+    start_time = datetime.datetime.now()
+    categories = category_generator.CategoryGenerator().generate_categories(sas_url)
+    end_time = datetime.datetime.now()
+
+    total_time = (end_time - start_time).total_seconds()
+    logging.info(f"AI category generation completed in {total_time} seconds")
+
+    result = {
+        'categories_result': categories,
         'total_time': total_time
     }
     return result
