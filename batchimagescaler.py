@@ -50,8 +50,8 @@ for blob in blobs:
 
     i += 1
 
-    #if i > 5:
-    #    break
+    if i > 100:
+        break
 
 end_time = datetime.now()
 

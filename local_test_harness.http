@@ -1,13 +1,8 @@
 http://localhost:7071/api/orchestrator?filename=BB99.tif
 
 ###
-
-http://localhost:7071/api/faceorchestrator?filename=BB99_converted.png
-
-###
-
-http://localhost:7071/api/imagescaler?filename=BB99.tif
+http://localhost:7071/api/orchestrator?filename=elephants.jpg
 
 ###
-
-http://localhost:7071/api/imagenarrativegenerator?filename=BB99_converted.png
+###
+http://localhost:7071/api/orchestrator?filename=image.png
